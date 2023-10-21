@@ -8,8 +8,8 @@ app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
-const PORT = process.env.PORT || 8080;
-//const PORT = 3000;
+//const PORT = process.env.PORT || 8080;
+const PORT = 2000;
 
 app.get("/", (req, res) => {
   res.send("Welcome to mboacare");
@@ -19,9 +19,10 @@ app.get("/", (req, res) => {
 app.post("/mboacare-api/register", UserController.register);
 app.post("/mboacare-api/sign-in", UserController.login);
 app.put("/mboacare-api/update-profile", UserController.update);
+app.post("/mboacare-api/reset-password", UserController.reset_password);
 
 app.listen(PORT, () => {
   console.log(`Server is running on PORT ${PORT}.`);
 });
 
-//exports.api = functions.https.onRequest(app);
+exports.api = functions.https.onRequest(app);
