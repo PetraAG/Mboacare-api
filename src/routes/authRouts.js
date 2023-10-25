@@ -7,6 +7,8 @@ const { UserController } = require("../controller/users/userController.js");
 router.post("/register", UserController.register);
 router.post("/sign-in", UserController.login);
 router.put("/update-profile", UserController.update);
+router.put("/change-password", UserController.change_password);
 router.post("/reset-password", UserController.reset_password);
+router.post("/log", UserController.log);
 
 module.exports = router;
