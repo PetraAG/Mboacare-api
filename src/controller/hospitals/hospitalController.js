@@ -1,4 +1,5 @@
 const express = require("express");
+const nodemailer = require("nodemailer");
 const { Storage } = require("@google-cloud/storage");
 const UUID = require("uuid-v4");
 const formidable = require("formidable-serverless");
@@ -15,6 +16,14 @@ exports.hospitalController = {
   add_hospital: async (req, res) => {
     const form = new formidable.IncomingForm({ multiples: true });
     try {
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: "company email",
+          pass: "pass",
+        },
+      });
+
       form.parse(req, async (err, fields, files) => {
         let uuid = UUID();
         var downLoadPath =
@@ -55,10 +64,11 @@ exports.hospitalController = {
             "?alt=media&token=" +
             uuid;
         }
+
         // object to send to database
         const hospitalModel = {
           id: docID,
-          idToken: fields.idToken,
+          userEmail: fields.userEmail,
           name: fields.name,
           phoneNumber: fields.phoneNumber,
           email: fields.email,
@@ -73,8 +83,8 @@ exports.hospitalController = {
           isApprove: false,
           hospitalImage: hospitalImage.size == 0 ? "" : imageUrl,
         };
-        if (!hospitalModel.idToken) {
-          res.status(400).send({ message: "idToken is required!" });
+        if (!hospitalModel.userEmail) {
+          res.status(400).send({ message: "Creator email  is required!" });
           return;
         }
         if (!hospitalModel.website) {
@@ -100,6 +110,31 @@ exports.hospitalController = {
               error: {},
             });
           });
+        const mailOptions = {
+          from: "Mboacare <mboacare237@gmail.com>",
+          to: hospitalModel.userEmail,
+          subject: "Hospital Details Submission Successful",
+          text: `Dear ${hospitalModel.name}
+    
+            Thank you for submitting your application . We have received your information and it is currently under review.
+            Our team will carefully evaluate your submission and get back to you as soon as possible.
+    
+            Please note that the review process may take some time, depending on the information provided in your submission. 
+            We appreciate your patience and understanding.
+
+            Note that after a successful review you will be able to manage your facilities
+            like update, upload and delete health facility.
+    
+            If you have any urgent inquiries or need immediate assistance, please don't hesitate
+            to contact our support team at <support email>.
+            
+    
+            Thank you for choosing Mboacare.
+    
+            Best regards,
+            Mboacare`,
+        };
+        await transporter.sendMail(mailOptions);
       });
     } catch (error) {
       res.send({ status: error.code, message: error.message });
@@ -134,6 +169,14 @@ exports.hospitalController = {
   update_hospital: async (req, res) => {
     const form = new formidable.IncomingForm({ multiples: true });
     try {
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: "company email",
+          pass: "pass",
+        },
+      });
+
       form.parse(req, async (err, fields, files) => {
         let uuid = UUID();
         var downLoadPath =
@@ -177,7 +220,7 @@ exports.hospitalController = {
         // object to send to database
         const hospitalModel = {
           id: docID,
-          idToken: fields.idToken,
+          userEmail: fields.userEmail,
           name: fields.name,
           phoneNumber: fields.phoneNumber,
           email: fields.email,
@@ -192,8 +235,8 @@ exports.hospitalController = {
           isApprove: false,
           hospitalImage: hospitalImage.size == 0 ? "" : imageUrl,
         };
-        if (!hospitalModel.idToken) {
-          res.status(400).send({ message: "idToken is required!" });
+        if (!hospitalModel.userEmail) {
+          res.status(400).send({ message: "Creator email is required!" });
           return;
         }
         if (!hospitalModel.website) {
@@ -219,6 +262,31 @@ exports.hospitalController = {
               error: {},
             });
           });
+        const mailOptions = {
+          from: "Mboacare <mboacare237@gmail.com>",
+          to: hospitalModel.userEmail,
+          subject: "Hospital Details updated Successful!",
+          text: `Dear ${hospitalModel.name}
+      
+              Thank you for submitting your application . We have received your information and it is currently under review.
+              Our team will carefully evaluate your submission and get back to you as soon as possible.
+      
+              Please note that the review process may take some time, depending on the information provided in your submission. 
+              We appreciate your patience and understanding.
+  
+              Note that after a successful review you will be able to manage your facilities
+              like update, upload and delete health facility.
+      
+              If you have any urgent inquiries or need immediate assistance, please don't hesitate
+              to contact our support team at <company email>.
+              
+      
+              Thank you for choosing Mboacare.
+      
+              Best regards,
+              Mboacare`,
+        };
+        await transporter.sendMail(mailOptions);
       });
     } catch (error) {
       res.send({ status: error.code, message: error.message });
