@@ -12,7 +12,7 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
 //const PORT = process.env.PORT || 8080;
-const PORT = 4001;
+const PORT = 4000;
 
 app.get("/", (req, res) => {
   res.send("Welcome to mboacare");
