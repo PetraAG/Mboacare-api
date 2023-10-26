@@ -20,8 +20,8 @@ exports.hospitalController = {
         host: "smtp.gmail.com",
         //port: 587,
         auth: {
-          user: "mboacare237@gmail.com",
-          pass: "aueqezamnwohglkb",
+          user: process.env.EMAIL,
+          pass: process.env.PASS,
         },
       });
 
@@ -112,7 +112,7 @@ exports.hospitalController = {
             });
           });
         const mailOptions = {
-          from: "mboacare237@gmail.com",
+          from: process.env.EMAIL,
           to: hospitalModel.userEmail,
           subject: "Hospital Details Submission Successful",
           html: `
@@ -128,7 +128,7 @@ exports.hospitalController = {
             like update, upload and delete health facility.</p>
     
             <p>If you have any urgent inquiries or need immediate assistance, please don't hesitate
-            to contact our support team at mboacare237@gmail.com.</p>
+            to contact our support team at <company email></p>
             
     
             <p>Thank you for choosing Mboacare.</p>
@@ -175,8 +175,8 @@ exports.hospitalController = {
         host: "smtp.gmail.com",
         //port: 587,
         auth: {
-          user: "mboacare237@gmail.com",
-          pass: "aueqezamnwohglkb",
+          user: process.env.EMAIL,
+          pass: process.env.PASS,
         },
       });
 
@@ -266,7 +266,7 @@ exports.hospitalController = {
             });
           });
         const mailOptions = {
-          from: "mboacare237@gmail.com",
+          from: process.env.EMAIL,
           to: hospitalModel.userEmail,
           subject: "Hospital Details updated Successful!",
           html: `
@@ -282,7 +282,7 @@ exports.hospitalController = {
            like update, upload and delete health facility.</p>
       
           <p>If you have any urgent inquiries or need immediate assistance, please don't hesitate
-          to contact our support team at mboacare237@gmail.com.</p>
+          to contact our support team at <company email>.</p>
               
       
           <p>Thank you for choosing Mboacare.</p>
