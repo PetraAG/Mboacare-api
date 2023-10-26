@@ -2,8 +2,8 @@ const express = require("express");
 const { Storage } = require("@google-cloud/storage");
 const UUID = require("uuid-v4");
 const formidable = require("formidable-serverless");
-//const { Utils } = require("../../src/utils/firebase_init.js");
 const { Utils } = require("../../utils/firebase_init");
+const nodemailer = require("nodemailer");
 
 const admin = Utils.init_files;
 
@@ -18,6 +18,14 @@ exports.blogController = {
   add_blog: async (req, res) => {
     const form = new formidable.IncomingForm({ multiples: true });
     try {
+      const transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        //port: 587,
+        auth: {
+          user: process.env.EMAIL,
+          pass: process.env.PASS,
+        },
+      });
       form.parse(req, async (err, fields, files) => {
         let uuid = UUID();
         var downLoadPath =
@@ -62,20 +70,16 @@ exports.blogController = {
         const blogModel = {
           id: docID,
           blogTitle: fields.blogTitle,
+          userEmail: fields.userEmail,
           blogAuthor: fields.blogAuthor,
-          blogSubtitle: fields.blogSubtitle,
-          blogContent: fields.blogContent,
           blogWebLink: fields.blogWebLink,
           blogCat: [fields.blogCat],
           blogPubDate: fields.blogPubDate,
+          isApprove: false,
           blogImage: blogImage.size == 0 ? "" : imageUrl,
         };
         if (!blogModel.blogTitle) {
           res.status(400).send({ message: "Blog Title is required!" });
-          return;
-        }
-        if (!blogModel.blogContent) {
-          res.status(400).send({ message: "Blog Content is required!" });
           return;
         }
         if (!blogModel.blogAuthor) {
@@ -88,23 +92,51 @@ exports.blogController = {
           return;
         }
 
+        if (!blogModel.userEmail) {
+          res.status(400).send({ message: "User Email is required!" });
+          return;
+        }
+
         await blogRef
           .doc(blogModel.blogTitle)
           .create(blogModel, { merge: true })
           .then((value) => {
             // return response to users
             res.status(200).send({
-              message: "Blog created successfully!",
+              message:
+                "Blog submitted successfully check email for blog status!!",
               data: blogModel,
               error: {},
             });
           });
+        const mailOptions = {
+          from: process.env.EMAIL,
+          to: blogModel.userEmail,
+          subject: "Blog Submission Successful",
+          html: `
+            <p>Dear ${blogModel.blogAuthor}.</p>
+      
+              <p>Thank you for submitting your blog details. We have received your information and it is currently under review.</p>
+              <p>Our team will carefully evaluate your submission and get back to you as soon as possible.</p>
+      
+              <p>Please note that the review process may take some time, depending on the information provided in your submission.</p>
+              <p> We appreciate your patience and understanding.</p>
+  
+              <p>If you have any urgent inquiries or need immediate assistance, please don't hesitate
+              to contact our support team at <support email></p>
+              
+      
+              <p>Thank you for choosing Mboacare.</p>
+      
+             <p> Best regards,</p>
+             <p> Mboacare</p>`,
+        };
+        await transporter.sendMail(mailOptions);
       });
     } catch (err) {
       res.send({
-        message: "Something went wrong",
+        message: err.message,
         data: {},
-        error: err.message,
       });
     }
   },
@@ -132,6 +164,14 @@ exports.blogController = {
   update_blog: async (req, res) => {
     const form = new formidable.IncomingForm({ multiples: true });
     try {
+      const transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        //port: 587,
+        auth: {
+          user:process.env.EMAIL,
+          pass: process.env.PASS,
+        },
+      });
       form.parse(req, async (err, fields, files) => {
         let uuid = UUID();
         var downLoadPath =
@@ -176,15 +216,18 @@ exports.blogController = {
         const blogModel = {
           id: docID,
           blogTitle: fields.blogTitle,
+          userEmail: fields.userEmail,
           blogAuthor: fields.blogAuthor,
-          blogSubtitle: fields.blogSubtitle,
-          blogContent: fields.blogContent,
           blogWebLink: fields.blogWebLink,
           blogCat: [fields.blogCat],
           blogPubDate: fields.blogPubDate,
+          isApprove: false,
           blogImage: blogImage.size == 0 ? "" : imageUrl,
         };
-
+        if (!blogModel.userEmail) {
+          res.status(400).send({ message: "User Email is required!" });
+          return;
+        }
         if (!blogModel.blogTitle) {
           res.status(400).send({ message: "Blog Title is required!" });
           return;
@@ -195,11 +238,34 @@ exports.blogController = {
           .then((value) => {
             // return response to users
             res.status(200).send({
-              message: "Blog Updated successfully!",
+              message: "Blog Updated successfully check email for blog status!",
               data: blogModel,
               error: {},
             });
           });
+        const mailOptions = {
+          from: process.env.EMAIL,
+          to: blogModel.userEmail,
+          subject: "Blog Update Submission Successful",
+          html: `
+            <p>Dear ${blogModel.blogAuthor}.</p>
+      
+              <p>Thank you for updating your blog details. We have received your information and it is currently under review.</p>
+              <p>Our team will carefully evaluate your submission and get back to you as soon as possible.</p>
+      
+              <p>Please note that the review process may take some time, depending on the information provided in your submission.</p>
+              <p> We appreciate your patience and understanding.</p>
+  
+              <p>If you have any urgent inquiries or need immediate assistance, please don't hesitate
+              to contact our support team at <support email>.</p>
+              
+      
+              <p>Thank you for choosing Mboacare.</p>
+      
+             <p>Best regards,</p>
+             <p>Mboacare</p>`,
+        };
+        await transporter.sendMail(mailOptions);
       });
     } catch (err) {
       res.send({
