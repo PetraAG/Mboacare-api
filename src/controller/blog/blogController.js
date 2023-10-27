@@ -23,7 +23,7 @@ exports.blogController = {
         //port: 587,
         auth: {
           user: process.env.EMAIL,
-          pass: process.env.PASS,
+          pass:process.env.PASS,
         },
       });
       form.parse(req, async (err, fields, files) => {
@@ -157,7 +157,7 @@ exports.blogController = {
       const response = await blogData.get();
       res.send({ data: response.data() });
     } catch (error) {
-      res.send(error);
+      res.send(error.message);
     }
   },
 
@@ -168,8 +168,8 @@ exports.blogController = {
         host: "smtp.gmail.com",
         //port: 587,
         auth: {
-          user:process.env.EMAIL,
-          pass: process.env.PASS,
+          user: process.env.EMAIL,
+          pass:process.env.PASS,
         },
       });
       form.parse(req, async (err, fields, files) => {

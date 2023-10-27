@@ -74,6 +74,7 @@ exports.hospitalController = {
           phoneNumber: fields.phoneNumber,
           email: fields.email,
           website: fields.website,
+          placeAddress: fields.placeAddress,
           latitude: fields.latitude,
           longitude: fields.longitude,
           serviceType: [fields.serviceType],
@@ -128,7 +129,7 @@ exports.hospitalController = {
             like update, upload and delete health facility.</p>
     
             <p>If you have any urgent inquiries or need immediate assistance, please don't hesitate
-            to contact our support team at <company email></p>
+            to contact our support team at <support></p>
             
     
             <p>Thank you for choosing Mboacare.</p>
@@ -228,6 +229,7 @@ exports.hospitalController = {
           phoneNumber: fields.phoneNumber,
           email: fields.email,
           website: fields.website,
+          placeAddress: fields.placeAddress,
           latitude: fields.latitude,
           longitude: fields.longitude,
           serviceType: [fields.serviceType],
@@ -282,7 +284,7 @@ exports.hospitalController = {
            like update, upload and delete health facility.</p>
       
           <p>If you have any urgent inquiries or need immediate assistance, please don't hesitate
-          to contact our support team at <company email>.</p>
+          to contact our support team at <support email>.</p>
               
       
           <p>Thank you for choosing Mboacare.</p>
