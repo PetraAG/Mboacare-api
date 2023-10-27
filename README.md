@@ -101,7 +101,7 @@ To test an endpoint such us registering new users in the system, we carry out th
 
 ## Link to API documentation
 
-- [API Doc](https://documenter.getpostman.com/view/23068653/2s9YRB4D8Q)
+- [API Doc](https://documenter.getpostman.com/view/30699829/2s9YRDyps7)
 
 ## License
 

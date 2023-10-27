@@ -9,10 +9,11 @@ exports.UserController = {
   register: async (req, res) => {
     try {
       const transporter = nodemailer.createTransport({
-        service: "gmail",
+        host: "smtp.gmail.com",
+        //port: 587,
         auth: {
-          user: "company email",
-          pass: "pass",
+          user: process.env.EMAIL,
+          pass: process.env.PASS,
         },
       });
 
@@ -37,25 +38,26 @@ exports.UserController = {
       //notification to verify account
       const link = await admin.auth().generateEmailVerificationLink(email);
       const mailOptions = {
-        from: "Mboacare <company email>",
+        from: process.env.EMAIL,
         to: email,
         subject: "Email Verification",
-        text: `Dear ${email}
+        html: `
+       <p>Dear ${email}</p>
 
-        Thank you for signing up Mboacare! To complete your registration and verify your email address, please click on the following link: 
+        <p>Thank you for signing up Mboacare! To complete your registration and verify your email address, please click on the following link:</p>
 
-        ${link}
+        <p>${link}</p>
 
-        By verifying your email, you will gain full access to all the features and benefits of our platform.
-        If you did not create an account with us, please disregard this email.
+        <p>By verifying your email, you will gain full access to all the features and benefits of our platform.</p>
+        <p>If you did not create an account with us, please disregard this email.</p>
 
-        If you have any questions or need further assistance, 
-        please feel free to reach out to our support team at <mboacare237@gmail.com>.
+       <p> If you have any questions or need further assistance, </p>
+       <p> please feel free to reach out to our support team at mboacare237@gmail.com.</p>
 
-        Thank you for choosing Mboacare.
+       <p> Thank you for choosing Mboacare.</p>
 
-        Best regards,
-        Mboacare`,
+       <p> Best regards,</p>
+       <p> Mboacare.</p>`
       };
       await transporter.sendMail(mailOptions);
 
@@ -67,27 +69,6 @@ exports.UserController = {
     } catch (err) {
       console.error(err.code, err.message);
       res.status(401).send({ status: err.code, message: err.message });
-
-      //   // Catch the FirebaseAuthError.
-      //   if (error.constructor === FirebaseAuthError) {
-      //     // Get the error code from the FirebaseAuthError object.
-      //     const errorCode = error.code;
-
-      //     // Switch on the error code to display a more specific error message to the user.
-      //     switch (errorCode) {
-      //       case "auth/email-already-in-use":
-      //         res
-      //           .status(errorCode)
-      //           .send("The email address is already in use by another account.");
-      //         break;
-      //       case "auth/weak-password":
-      //         res.status(errorCode).send("The password is too weak.");
-      //         break;
-      //       default:
-      //         res.status(errorCode).send("An unexpected error occurred.");
-      //         break;
-      //     }
-      //   }
     }
   },
 
@@ -149,10 +130,6 @@ exports.UserController = {
       res
         .status(200)
         .send({ message: "Update profile successful!", data: updateUserData });
-      // res.json({
-      //   message: "Account Updated Successful",
-      //   user: updateUserData,
-      // });
     } catch (err) {
       console.error(err.code, err.message);
       res.status(401).send({ message: err.message });
@@ -162,10 +139,11 @@ exports.UserController = {
   reset_password: async (req, res) => {
     try {
       const transporter = nodemailer.createTransport({
-        service: "gmail",
+        host: "smtp.gmail.com",
+        //port: 587,
         auth: {
-          user: "company email",
-          pass: "pass",
+          user: process.env.EMAIL,
+          pass: process.env.PASS,
         },
       });
       const email = req.body.email;
@@ -175,22 +153,23 @@ exports.UserController = {
       // Send the password reset link to the user
 
       const mailOptions = {
-        from: "Mboacare <company email>",
+        from: process.env.EMAIL,
         to: email,
         subject: "Password Reset Notification",
-        text: `Dear ${email}
+        html: `
+        <p>Dear ${email}.</p>
 
-        We received a request to reset your password for your account. To proceed with the password reset,
-        please click on the following link: 
+        <p>We received a request to reset your password for your account. To proceed with the password reset,
+        please click on the following link:</p> 
 
-        ${link}
+        <p>${link}</p>
 
-        If you did not initiate this request, please ignore this email. Your password will remain unchanged.
+        <p>If you did not initiate this request, please ignore this email. Your password will remain unchanged.</p>
 
-        Thank you for using Mboacare.
+        <p>Thank you for using Mboacare.</p>
 
-        Best regards,
-        Mboacare
+        <p>Best regards,</p>
+       <p>Mboacare</p>
         `,
       };
       await transporter.sendMail(mailOptions);
@@ -203,9 +182,16 @@ exports.UserController = {
 
   change_password: async (req, res) => {
     try {
+      const transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        //port: 587,
+        auth: {
+          user: process.env.EMAIL,
+          pass: process.env.PASS,
+        },
+      });
       const { uid, email, new_password } = req.body;
       const user = await admin.auth().getUser(uid);
-      console.log(user);
       const userEmail = await user.email;
 
       // Compare the old password and input password.
@@ -222,34 +208,48 @@ exports.UserController = {
         uid: uid,
         password: new_password,
       });
+      // Send the password reset link to the user
 
+      const mailOptions = {
+        from: process.env.EMAIL,
+        to: email,
+        subject: "Password Update Notification",
+        html: `
+        <p>Dear ${email}</p>
+        <p>Your password has been successfully changed.</p>
+        <p>If you did not initiate this change, please contact us immediately.</p>
+
+        <p>Thank you for using Mboacare.</p>
+        <p>Best Regards,</p>
+
+        <p>Mboacare</p>
+      `,
+      };
+      await transporter.sendMail(mailOptions);
       res.status(200).send({
         message: "password changed successful!",
         data: updateUserData,
       });
-      // res.json({
-      //   message: "Account Updated Successful",
-      //   user: updateUserData,
-      // });
     } catch (err) {
       console.error(err.code, err.message);
       res.status(401).send({ message: err.message });
     }
   },
 
-  log: async (req, res) => {
-    try {
-      const { uid } = req.body;
-      const data = await admin.auth().getUser(uid);
-      const token = await admin.auth().createCustomToken(data.uid);
-      const user = await admin.auth().verifySessionCookie(token);
-      res.status(200).send({
-        message: "login successful!",
-        data: user,
-      });
-    } catch (error) {
-      console.error(error.code, error.message);
-      res.status(401).send({ message: error.message });
-    }
-  },
+  // log: async (req, res) => {
+  //   try {
+  //     const { email, password } = req.body;
+  //     const user = await firebase.signInWithEmailAndPassword({
+  //       email: email,
+  //       password: password,
+  //     });
+  //     res.status(200).send({
+  //       message: "login successful!",
+  //       data: user,
+  //     });
+  //   } catch (error) {
+  //     console.error(error.code, error.message);
+  //     res.status(401).send({ message: error.message });
+  //   }
+  // },
 };

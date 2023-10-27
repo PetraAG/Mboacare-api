@@ -17,10 +17,11 @@ exports.hospitalController = {
     const form = new formidable.IncomingForm({ multiples: true });
     try {
       const transporter = nodemailer.createTransport({
-        service: "gmail",
+        host: "smtp.gmail.com",
+        //port: 587,
         auth: {
-          user: "company email",
-          pass: "pass",
+          user: process.env.EMAIL,
+          pass: process.env.PASS,
         },
       });
 
@@ -111,28 +112,29 @@ exports.hospitalController = {
             });
           });
         const mailOptions = {
-          from: "Mboacare <mboacare237@gmail.com>",
+          from: process.env.EMAIL,
           to: hospitalModel.userEmail,
           subject: "Hospital Details Submission Successful",
-          text: `Dear ${hospitalModel.name}
+          html: `
+          <p>Dear ${hospitalModel.name}.</p>
     
-            Thank you for submitting your application . We have received your information and it is currently under review.
-            Our team will carefully evaluate your submission and get back to you as soon as possible.
+            <p>Thank you for submitting your application . We have received your information and it is currently under review.</p>
+            <p>Our team will carefully evaluate your submission and get back to you as soon as possible.</p>
     
-            Please note that the review process may take some time, depending on the information provided in your submission. 
-            We appreciate your patience and understanding.
+            <p>Please note that the review process may take some time, depending on the information provided in your submission.</p>
+           <p> We appreciate your patience and understanding.</p>
 
-            Note that after a successful review you will be able to manage your facilities
-            like update, upload and delete health facility.
+            <p>Note that after a successful review you will be able to manage your facilities
+            like update, upload and delete health facility.</p>
     
-            If you have any urgent inquiries or need immediate assistance, please don't hesitate
-            to contact our support team at <support email>.
+            <p>If you have any urgent inquiries or need immediate assistance, please don't hesitate
+            to contact our support team at <company email></p>
             
     
-            Thank you for choosing Mboacare.
+            <p>Thank you for choosing Mboacare.</p>
     
-            Best regards,
-            Mboacare`,
+           <p> Best regards,</p>
+           <p> Mboacare</p>`,
         };
         await transporter.sendMail(mailOptions);
       });
@@ -170,10 +172,11 @@ exports.hospitalController = {
     const form = new formidable.IncomingForm({ multiples: true });
     try {
       const transporter = nodemailer.createTransport({
-        service: "gmail",
+        host: "smtp.gmail.com",
+        //port: 587,
         auth: {
-          user: "company email",
-          pass: "pass",
+          user: process.env.EMAIL,
+          pass: process.env.PASS,
         },
       });
 
@@ -263,28 +266,29 @@ exports.hospitalController = {
             });
           });
         const mailOptions = {
-          from: "Mboacare <mboacare237@gmail.com>",
+          from: process.env.EMAIL,
           to: hospitalModel.userEmail,
           subject: "Hospital Details updated Successful!",
-          text: `Dear ${hospitalModel.name}
+          html: `
+          <p>Dear ${hospitalModel.name}.</p>
       
-              Thank you for submitting your application . We have received your information and it is currently under review.
-              Our team will carefully evaluate your submission and get back to you as soon as possible.
+          <p>Thank you for submitting your application . We have received your information and it is currently under review.</p>
+          <p>Our team will carefully evaluate your submission and get back to you as soon as possible.</p>
       
-              Please note that the review process may take some time, depending on the information provided in your submission. 
-              We appreciate your patience and understanding.
+          <p>Please note that the review process may take some time, depending on the information provided in your submission.</p>
+          <p>We appreciate your patience and understanding.</p>
   
-              Note that after a successful review you will be able to manage your facilities
-              like update, upload and delete health facility.
+          <p>Note that after a successful review you will be able to manage your facilities
+           like update, upload and delete health facility.</p>
       
-              If you have any urgent inquiries or need immediate assistance, please don't hesitate
-              to contact our support team at <company email>.
+          <p>If you have any urgent inquiries or need immediate assistance, please don't hesitate
+          to contact our support team at <company email>.</p>
               
       
-              Thank you for choosing Mboacare.
+          <p>Thank you for choosing Mboacare.</p>
       
-              Best regards,
-              Mboacare`,
+          <p>Best regards,</p>
+          <p>Mboacare</p>`,
         };
         await transporter.sendMail(mailOptions);
       });
