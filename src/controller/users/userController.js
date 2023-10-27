@@ -52,12 +52,12 @@ exports.UserController = {
         <p>If you did not create an account with us, please disregard this email.</p>
 
        <p> If you have any questions or need further assistance, </p>
-       <p> please feel free to reach out to our support team at mboacare237@gmail.com.</p>
+       <p> please feel free to reach out to our support team at <support email></p>
 
        <p> Thank you for choosing Mboacare.</p>
 
        <p> Best regards,</p>
-       <p> Mboacare.</p>`
+       <p> Mboacare.</p>`,
       };
       await transporter.sendMail(mailOptions);
 
