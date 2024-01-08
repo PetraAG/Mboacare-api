@@ -16,14 +16,16 @@ const storage = new Storage({
 
 exports.blogController = {
   add_blog: async (req, res) => {
+    const now = new Date();
+    const currentDateTime = now.toLocaleString();
     const form = new formidable.IncomingForm({ multiples: true });
     try {
       const transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
         //port: 587,
         auth: {
-          user: process.env.EMAIL,
-          pass:process.env.PASS,
+          user: process.env.email,
+          pass: process.env.pass,
         },
       });
       form.parse(req, async (err, fields, files) => {
@@ -74,7 +76,7 @@ exports.blogController = {
           blogAuthor: fields.blogAuthor,
           blogWebLink: fields.blogWebLink,
           blogCat: [fields.blogCat],
-          blogPubDate: fields.blogPubDate,
+          blogPubDate: currentDateTime,
           isApprove: false,
           blogImage: blogImage.size == 0 ? "" : imageUrl,
         };
@@ -110,7 +112,7 @@ exports.blogController = {
             });
           });
         const mailOptions = {
-          from: process.env.EMAIL,
+          from: process.env.email,
           to: blogModel.userEmail,
           subject: "Blog Submission Successful",
           html: `
@@ -134,22 +136,22 @@ exports.blogController = {
         await transporter.sendMail(mailOptions);
       });
     } catch (err) {
-      res.send({
+      res.json({
         message: err.message,
         data: {},
       });
     }
   },
 
-  all_blogs: async (req, res, next) => {
-    await blogRef.get().then((value) => {
-      const data = value.docs.map((doc) => doc.data());
-      res.status(200).send({
-        message: "Fetched all blog",
-        data: data,
-      });
-    });
-  },
+  // all_blogs: async (req, res, next) => {
+  //   await blogRef.get().then((value) => {
+  //     const data = value.docs.map((doc) => doc.data());
+  //     res.status(200).send({
+  //       message: "Fetched all blog",
+  //       data: data,
+  //     });
+  //   });
+  // },
 
   blogById: async (req, res) => {
     try {
@@ -162,14 +164,16 @@ exports.blogController = {
   },
 
   update_blog: async (req, res) => {
+    const now = new Date();
+    const currentDateTime = now.toLocaleString();
     const form = new formidable.IncomingForm({ multiples: true });
     try {
       const transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
         //port: 587,
         auth: {
-          user: process.env.EMAIL,
-          pass:process.env.PASS,
+          user: process.env.email,
+          pass: process.env.pass,
         },
       });
       form.parse(req, async (err, fields, files) => {
@@ -220,7 +224,7 @@ exports.blogController = {
           blogAuthor: fields.blogAuthor,
           blogWebLink: fields.blogWebLink,
           blogCat: [fields.blogCat],
-          blogPubDate: fields.blogPubDate,
+          blogPubDate: currentDateTime,
           isApprove: false,
           blogImage: blogImage.size == 0 ? "" : imageUrl,
         };
@@ -244,7 +248,7 @@ exports.blogController = {
             });
           });
         const mailOptions = {
-          from: process.env.EMAIL,
+          from: process.env.email,
           to: blogModel.userEmail,
           subject: "Blog Update Submission Successful",
           html: `
@@ -283,6 +287,93 @@ exports.blogController = {
       res.send({ message: "Blog deleted successful", data: response });
     } catch (error) {
       res.send(error.message);
+    }
+  },
+
+  list_blog: async (req, res) => {
+    try {
+      const query = req.query.q;
+
+      const queryRef = await admin
+        .firestore()
+        .collection("blogs")
+        .where("userEmail", "==", query);
+      // Get the search results
+      const results = await queryRef.get();
+      // Send the search results to the response
+      response = results.docs.map((doc) => doc.data());
+      res.status(200).send({ data: response });
+    } catch (error) {
+      res.status(401).send({ message: error.message });
+    }
+  },
+  search_blog: async (req, res) => {
+    // Get the search query from the request
+
+    // try {
+    //   const query = req.query.q;
+
+    //   // Create a Firestore query
+    //   const queryRef = await admin
+    //     .firestore()
+    //     .collection("blogs")
+    //     .where("blogTitle", "==", query);
+    //   // Get the search results
+    //   const results = await queryRef.get();
+    //   // Send the search results to the response
+    //   res.status(200).send(results.docs.map((doc) => doc.data()));
+    // } catch (error) {
+    //   res.status(401).send({ message: error.message });
+    // }
+    try {
+      const query1 = req.query.q;
+
+      const query = db.collection("blogs"); // Replace with your collection name
+
+      // Build the query using multiple where conditions
+      query.where("blogTitle", "==", query1);
+      query.where("blogAuthor", "==", query1);
+      // Add more where conditions for additional fields
+
+      const snapshot = await query.get();
+      const results = snapshot.docs.map((doc) => doc.data());
+
+      res.json({data: results});
+    } catch (err) {
+      // console.error(err);
+      res.status(500).send("Error fetching data");
+    }
+  },
+  filter_blog: async (req, res) => {
+    try {
+      // Assuming you have a ' blogPubDate' timestamp field to determine newest items
+      const query = db.collection("blogs").orderBy("blogPubDate", "asc"); // Sort by  blogPubDate in descending order
+
+      const snapshot = await query.get();
+      const newestItems = snapshot.docs.map((doc) => doc.data());
+
+      res.json({ data: newestItems });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send({ message: "Error fetching newest items" });
+    }
+  },
+
+  all_blogs: async (req, res) => {
+    try {
+    
+
+      const queryRef = await admin
+        .firestore()
+        .collection("blogs")
+        .where("isApprove", "==", true);
+     
+      const results = await queryRef.get();
+      
+      response = results.docs.map((doc) => doc.data());
+      res.status(200).send({ data: response });
+    } catch (error) {
+      res.status(401).send({ message: error.message });
     }
   },
 };

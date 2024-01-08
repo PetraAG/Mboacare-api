@@ -20,8 +20,8 @@ exports.hospitalController = {
         host: "smtp.gmail.com",
         //port: 587,
         auth: {
-          user: process.env.EMAIL,
-          pass: process.env.PASS,
+          user: process.env.email,
+          pass: process.env.pass,
         },
       });
 
@@ -113,7 +113,7 @@ exports.hospitalController = {
             });
           });
         const mailOptions = {
-          from: process.env.EMAIL,
+          from: process.env.email,
           to: hospitalModel.userEmail,
           subject: "Hospital Details Submission Successful",
           html: `
@@ -144,19 +144,52 @@ exports.hospitalController = {
     }
   },
 
+  // all_hospitals: async (req, res) => {
+  //   try {
+  //     const hospitalData = db.collection("hospitals");
+  //     const response = await hospitalData.get();
+
+  //     let responseData = [];
+  //     response.forEach((doc) => {
+  //       responseData.push(doc.data());
+  //     });
+  //     res.send({
+  //       data: responseData,
+  //     });
+  //   } catch (error) {
+  //     res.send(error);
+  //   }
+  // },
   all_hospitals: async (req, res) => {
     try {
-      const hospitalData = db.collection("hospitals");
-      const response = await hospitalData.get();
+    
 
-      let responseData = [];
-      response.forEach((doc) => {
-        responseData.push(doc.data());
-      });
-      res.send(responseData);
+      const queryRef = await admin
+        .firestore()
+        .collection("hospitals")
+        .where("isApprove", "==", true);
+     
+      const results = await queryRef.get();
+      
+      response = results.docs.map((doc) => doc.data());
+      res.status(200).send({ data: response });
     } catch (error) {
-      res.send(error);
+      res.status(401).send({ message: error.message });
     }
+    // try {
+    //   const hospitalData = db.collection("hospitals");
+    //   const response = await hospitalData.get();
+
+    //   let responseData = [];
+    //   response.forEach((doc) => {
+    //     responseData.push(doc.data());
+    //   });
+    //   res.send({
+    //     data: responseData,
+    //   });
+    // } catch (error) {
+    //   res.send(error);
+    // }
   },
 
   singleHospital: async (req, res) => {
@@ -176,8 +209,8 @@ exports.hospitalController = {
         host: "smtp.gmail.com",
         //port: 587,
         auth: {
-          user: process.env.EMAIL,
-          pass: process.env.PASS,
+          user: process.env.email,
+          pass: process.env.pass,
         },
       });
 
@@ -268,7 +301,7 @@ exports.hospitalController = {
             });
           });
         const mailOptions = {
-          from: process.env.EMAIL,
+          from: process.env.email,
           to: hospitalModel.userEmail,
           subject: "Hospital Details updated Successful!",
           html: `
@@ -324,6 +357,57 @@ exports.hospitalController = {
       });
     } catch (error) {
       res.send(error.message);
+    }
+  },
+  list_hospital: async (req, res) => {
+    try {
+      const query = req.query.q;
+
+      const queryRef = await admin
+        .firestore()
+        .collection("hospitals")
+        .where("userEmail", "==", query);
+      // Get the search results
+      const results = await queryRef.get();
+      // Send the search results to the response
+      response = results.docs.map((doc) => doc.data());
+      res.status(200).send({ data: response });
+    } catch (error) {
+      res.status(401).send({ message: error.message });
+    }
+  },
+
+  search_hospital: async (req, res) => {
+    // try {
+    //   const query = req.query.q;
+
+    //   const queryRef = await admin
+    //     .firestore()
+    //     .collection("hospitals")
+    //     .where("name", "==", query);
+    //   // Get the search results
+    //   const results = await queryRef.get();
+    //   // Send the search results to the response
+    //   response = results.docs.map((doc) => doc.data());
+    //   res.status(200).send({ data: response });
+    // } catch (error) {
+    //   res.status(401).send({ message: error.message });
+    // }
+    try {
+      const query = req.query.q;
+
+      // Create a Firestore query
+      const queryRef = await admin
+        .firestore()
+        .collection("hospitals")
+        .where("name", "==", query);
+      // Get the search results
+      const results = await queryRef.get();
+      const response = results.docs.map((doc) => doc.data());
+      // Send the search results to the response
+      res.status(200).send({ data: response });
+    } catch (error) {
+      res.status(401).send({ message: error.message });
     }
   },
 };
