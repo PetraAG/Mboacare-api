@@ -12,8 +12,8 @@ exports.UserController = {
         host: "smtp.gmail.com",
         //port: 587,
         auth: {
-          user: process.env.EMAIL,
-          pass: process.env.PASS,
+          user: process.env.email,
+          pass: process.env.pass,
         },
       });
 
@@ -38,7 +38,7 @@ exports.UserController = {
       //notification to verify account
       const link = await admin.auth().generateEmailVerificationLink(email);
       const mailOptions = {
-        from: process.env.EMAIL,
+        from: process.env.email,
         to: email,
         subject: "Email Verification",
         html: `
@@ -142,8 +142,8 @@ exports.UserController = {
         host: "smtp.gmail.com",
         //port: 587,
         auth: {
-          user: process.env.EMAIL,
-          pass: process.env.PASS,
+          user: process.env.email,
+          pass: process.env.pass,
         },
       });
       const email = req.body.email;
@@ -153,7 +153,7 @@ exports.UserController = {
       // Send the password reset link to the user
 
       const mailOptions = {
-        from: process.env.EMAIL,
+        from: process.env.email,
         to: email,
         subject: "Password Reset Notification",
         html: `
@@ -186,8 +186,8 @@ exports.UserController = {
         host: "smtp.gmail.com",
         //port: 587,
         auth: {
-          user: process.env.EMAIL,
-          pass: process.env.PASS,
+          user: process.env.email,
+          pass: process.env.pass,
         },
       });
       const { uid, email, new_password } = req.body;
@@ -211,7 +211,7 @@ exports.UserController = {
       // Send the password reset link to the user
 
       const mailOptions = {
-        from: process.env.EMAIL,
+        from: process.env.email,
         to: email,
         subject: "Password Update Notification",
         html: `
@@ -252,4 +252,57 @@ exports.UserController = {
   //     res.status(401).send({ message: error.message });
   //   }
   // },
+
+
+  sendlink: async (req, res) => {
+    try {
+      const transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        //port: 587,
+        auth: {
+          user: 'mboacare237@gmail.com',
+          pass: 'aueqezamnwohglkb',
+        },
+      });
+
+      const { email} = req.body;
+
+      if (!email) {
+        res.status(401).send({ message: "Email is Required!" });
+        return;
+      }
+      //notification to verify account
+      const link = await admin.auth().generateEmailVerificationLink(email);
+      const mailOptions = {
+        from: 'mboacare237@gmail.com',
+        to: email,
+        subject: "Email Verification",
+        html: `
+       <p>Dear ${email}</p>
+
+        <p>Thank you for signing up Mboacare! To complete your registration and verify your email address, please click on the following link:</p>
+
+        <p>${link}</p>
+
+        <p>By verifying your email, you will gain full access to all the features and benefits of our platform.</p>
+        <p>If you did not create an account with us, please disregard this email.</p>
+
+       <p> If you have any questions or need further assistance, </p>
+       <p> please feel free to reach out to our support team at <support email></p>
+
+       <p> Thank you for choosing Mboacare.</p>
+
+       <p> Best regards,</p>
+       <p> Mboacare.</p>`,
+      };
+      await transporter.sendMail(mailOptions);
+
+      res.status(200).send({
+        message: "Account Created Successful Check email to verify account!",
+      });
+    } catch (err) {
+      console.error(err.code, err.message);
+      res.status(401).send({ status: err.code, message: err.message });
+    }
+  },
 };
