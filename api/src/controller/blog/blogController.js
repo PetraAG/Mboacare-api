@@ -25,7 +25,7 @@ exports.blogController = {
         //port: 587,
         auth: {
           user: process.env.email,
-          pass: process.env.pass,
+          pass: process.env.password,
         },
       });
       form.parse(req, async (err, fields, files) => {
@@ -50,6 +50,11 @@ exports.blogController = {
         const bucket = storage.bucket("gs://mboacare-api-v1.appspot.com");
 
         if (blogImage.size == 0) {
+          return res.status(400).json({
+            message: "Image is required",
+            data: {},
+            error: err,
+          });
           // do nothing
         } else {
           const imageResponse = await bucket.upload(blogImage.path, {
@@ -100,7 +105,7 @@ exports.blogController = {
         }
 
         await blogRef
-          .doc(blogModel.blogTitle)
+          .doc(blogModel.id)
           .create(blogModel, { merge: true })
           .then((value) => {
             // return response to users
@@ -125,7 +130,7 @@ exports.blogController = {
               <p> We appreciate your patience and understanding.</p>
   
               <p>If you have any urgent inquiries or need immediate assistance, please don't hesitate
-              to contact our support team at <support email></p>
+              to contact our support team at <a>mboacare237@gmail.com</a></p>
               
       
               <p>Thank you for choosing Mboacare.</p>
@@ -142,16 +147,6 @@ exports.blogController = {
       });
     }
   },
-
-  // all_blogs: async (req, res, next) => {
-  //   await blogRef.get().then((value) => {
-  //     const data = value.docs.map((doc) => doc.data());
-  //     res.status(200).send({
-  //       message: "Fetched all blog",
-  //       data: data,
-  //     });
-  //   });
-  // },
 
   blogById: async (req, res) => {
     try {
@@ -173,7 +168,7 @@ exports.blogController = {
         //port: 587,
         auth: {
           user: process.env.email,
-          pass: process.env.pass,
+          pass: process.env.password,
         },
       });
       form.parse(req, async (err, fields, files) => {
@@ -198,6 +193,11 @@ exports.blogController = {
         const bucket = storage.bucket("gs://mboacare-api-v1.appspot.com");
 
         if (blogImage.size == 0) {
+          return res.status(400).json({
+            message: "Image is required",
+            data: {},
+            error: err,
+          });
           // do nothing
         } else {
           const imageResponse = await bucket.upload(blogImage.path, {
@@ -218,7 +218,7 @@ exports.blogController = {
         }
         // object to send to database
         const blogModel = {
-          id: docID,
+          id: fields.id,
           blogTitle: fields.blogTitle,
           userEmail: fields.userEmail,
           blogAuthor: fields.blogAuthor,
@@ -237,7 +237,7 @@ exports.blogController = {
           return;
         }
         await blogRef
-          .doc(docID)
+          .doc(blogModel.id)
           .update(blogModel, { merge: true })
           .then((value) => {
             // return response to users
@@ -261,7 +261,7 @@ exports.blogController = {
               <p> We appreciate your patience and understanding.</p>
   
               <p>If you have any urgent inquiries or need immediate assistance, please don't hesitate
-              to contact our support team at <support email>.</p>
+              to contact our support team at <a>mboacare237@gmail.com</a>.</p>
               
       
               <p>Thank you for choosing Mboacare.</p>
@@ -338,7 +338,7 @@ exports.blogController = {
       const snapshot = await query.get();
       const results = snapshot.docs.map((doc) => doc.data());
 
-      res.json({data: results});
+      res.json({ data: results });
     } catch (err) {
       // console.error(err);
       res.status(500).send("Error fetching data");
@@ -361,15 +361,13 @@ exports.blogController = {
 
   all_blogs: async (req, res) => {
     try {
-    
-
       const queryRef = await admin
         .firestore()
         .collection("blogs")
         .where("isApprove", "==", true);
-     
+
       const results = await queryRef.get();
-      
+
       response = results.docs.map((doc) => doc.data());
       res.status(200).send({ data: response });
     } catch (error) {

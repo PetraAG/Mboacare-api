@@ -7,7 +7,7 @@ router.get("/all-blogs", blogController.all_blogs);
 router.get("/my-blogs", blogController.list_blog);
 router.get("/single-blog/:id", blogController.blogById);
 router.delete("/delete-blog/:id", blogController.delete_blog);
-router.post("/update-blog", blogController.update_blog);
+router.put("/update-blog", blogController.update_blog);
 router.get("/search", blogController.search_blog);
 router.get("/filter", blogController.filter_blog);
 
