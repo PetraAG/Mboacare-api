@@ -7,12 +7,16 @@ const db = admin.firestore();
 const notificationRef = db.collection("notifications");
 exports.notificationController = {
   add_notification: async (req, res) => {
+    const now = new Date();
+    const currentDateTime = now.toLocaleString();
     try {
-      const { title, content, pubDate } = req.body;
-      const notification = await notificationRef.doc(title).create({
+      const docID = notificationRef.doc().id;
+      const { title, content } = req.body;
+      const notification = await notificationRef.doc(docID).create({
+        id: docID,
         title: title,
         content: content,
-        pubDate: pubDate,
+        pubDate: currentDateTime,
       });
       if (!title) {
         res.status(401).send({
