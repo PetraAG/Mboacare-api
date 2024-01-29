@@ -21,7 +21,7 @@ exports.hospitalController = {
         //port: 587,
         auth: {
           user: process.env.email,
-          pass: process.env.pass,
+          pass: process.env.password,
         },
       });
 
@@ -47,6 +47,11 @@ exports.hospitalController = {
         const bucket = storage.bucket("gs://mboacare-api-v1.appspot.com");
 
         if (hospitalImage.size == 0) {
+          return res.status(400).json({
+            message: "Image is required",
+            data: {},
+            error: err,
+          });
           // do nothing
         } else {
           const imageResponse = await bucket.upload(hospitalImage.path, {
@@ -65,8 +70,8 @@ exports.hospitalController = {
             "?alt=media&token=" +
             uuid;
         }
-
         // object to send to database
+
         const hospitalModel = {
           id: docID,
           userEmail: fields.userEmail,
@@ -102,7 +107,7 @@ exports.hospitalController = {
           return;
         }
         await hospitalRef
-          .doc(hospitalModel.website)
+          .doc(hospitalModel.id)
           .create(hospitalModel, { merge: true })
           .then((value) => {
             // return response to users
@@ -129,7 +134,7 @@ exports.hospitalController = {
             like update, upload and delete health facility.</p>
     
             <p>If you have any urgent inquiries or need immediate assistance, please don't hesitate
-            to contact our support team at <support></p>
+            to contact our support team at <a>mboacare237@gmail.com</a></p>
             
     
             <p>Thank you for choosing Mboacare.</p>
@@ -162,15 +167,13 @@ exports.hospitalController = {
   // },
   all_hospitals: async (req, res) => {
     try {
-    
-
       const queryRef = await admin
         .firestore()
         .collection("hospitals")
         .where("isApprove", "==", true);
-     
+
       const results = await queryRef.get();
-      
+
       response = results.docs.map((doc) => doc.data());
       res.status(200).send({ data: response });
     } catch (error) {
@@ -210,7 +213,7 @@ exports.hospitalController = {
         //port: 587,
         auth: {
           user: process.env.email,
-          pass: process.env.pass,
+          pass: process.env.password,
         },
       });
 
@@ -236,6 +239,11 @@ exports.hospitalController = {
         const bucket = storage.bucket("gs://mboacare-api-v1.appspot.com");
 
         if (hospitalImage.size == 0) {
+          return res.status(400).json({
+            message: "Image is required",
+            data: {},
+            error: err,
+          });
           // do nothing
         } else {
           const imageResponse = await bucket.upload(hospitalImage.path, {
@@ -290,7 +298,7 @@ exports.hospitalController = {
           return;
         }
         await hospitalRef
-          .doc(hospitalModel.website)
+          .doc(hospitalModel.id)
           .update(hospitalModel, { merge: true })
           .then((value) => {
             // return response to users
@@ -317,7 +325,7 @@ exports.hospitalController = {
            like update, upload and delete health facility.</p>
       
           <p>If you have any urgent inquiries or need immediate assistance, please don't hesitate
-          to contact our support team at <support email>.</p>
+          to contact our support team at <a>mboacare237@gmail.com</a>.</p>
               
       
           <p>Thank you for choosing Mboacare.</p>

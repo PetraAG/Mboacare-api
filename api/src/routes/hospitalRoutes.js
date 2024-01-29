@@ -5,7 +5,7 @@ const {
 const router = express.Router();
 
 router.post("/add-hospital", hospitalController.add_hospital);
-router.post("/update-hospital", hospitalController.update_hospital);
+router.put("/update-hospital", hospitalController.update_hospital);
 router.post("/approve-hospital", hospitalController.approve_hospital);
 router.get("/all-hospital", hospitalController.all_hospitals);
 router.get("/my-hospitals", hospitalController.list_hospital);
