@@ -3,7 +3,14 @@ const { Utils } = require("../../utils/firebase_init.js");
 const FirebaseAuthError = require("firebase-admin");
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcryptjs");
+const { Storage } = require("@google-cloud/storage");
+const UUID = require("uuid-v4");
+const formidable = require("formidable-serverless");
 const admin = Utils.init_files;
+
+const storage = new Storage({
+  keyFilename: "serviceAccountKey.json",
+});
 
 exports.UserController = {
   register: async (req, res) => {
@@ -13,7 +20,7 @@ exports.UserController = {
         //port: 587,
         auth: {
           user: process.env.email,
-          pass: process.env.pass,
+          pass: process.env.password,
         },
       });
 
@@ -117,22 +124,96 @@ exports.UserController = {
     }
   },
 
-  update: async (req, res) => {
+  // update: async (req, res) => {
+  //   try {
+  //     const { uid, phoneNumber, displayName, photoURL } = req.body;
+  //     const updateUserData = await admin.auth().updateUser(uid, {
+  //       uid: uid,
+  //       phoneNumber: phoneNumber,
+  //       displayName: displayName,
+  //       photoURL: photoURL,
+  //     });
+  //     res
+  //       .status(200)
+  //       .send({ message: "Update profile successful!", data: updateUserData });
+  //   } catch (err) {
+  //     console.error(err.code, err.message);
+  //     res.status(401).send({ message: err.message });
+  //   }
+  // },
+
+  update_profile: async (req, res) => {
+    const form = new formidable.IncomingForm({ multiples: true });
     try {
-      const { uid, email, phoneNumber, displayName, photoURL } = req.body;
-      const updateUserData = await admin.auth().updateUser(uid, {
-        uid: uid,
-        email: email,
-        phoneNumber: phoneNumber,
-        displayName: displayName,
-        photoURL: photoURL,
+      form.parse(req, async (err, fields, files) => {
+        let uuid = UUID();
+        var downLoadPath =
+          "https://firebasestorage.googleapis.com/v0/b/mboacare-api-v1.appspot.com/o/";
+
+        const profileImage = files.profileImage;
+
+        // url of the uploaded image
+        let imageUrl;
+
+        //const docID = blogRef.doc().id;
+
+        if (err) {
+          return res.status(400).json({
+            message: "There was an error parsing the files",
+            data: {},
+            error: err,
+          });
+        }
+        const bucket = storage.bucket("gs://mboacare-api-v1.appspot.com");
+
+        if (profileImage.size == 0) {
+          return res.status(400).json({
+            message: "Image is required",
+            data: {},
+            error: err,
+          });
+          // do nothing
+        } else {
+          const imageResponse = await bucket.upload(profileImage.path, {
+            destination: `blogs/${profileImage.name}`,
+            resumable: true,
+            metadata: {
+              metadata: {
+                firebaseStorageDownloadTokens: uuid,
+              },
+            },
+          });
+          // profile image url
+          imageUrl =
+            downLoadPath +
+            encodeURIComponent(imageResponse[0].name) +
+            "?alt=media&token=" +
+            uuid;
+        }
+        // object to send to database
+        const profileModel = {
+          id: fields.id,
+          name: fields.name,
+          phone: fields.phone,
+          profileImage: profileImage.size == 0 ? "" : imageUrl,
+        };
+        const updateUserData = await admin.auth().updateUser(profileModel.id, {
+          uid: profileModel.id,
+          phoneNumber: profileModel.phone,
+          displayName: profileModel.name,
+          photoURL: profileModel.profileImage,
+        });
+        res.status(200).send({
+          message: "Update profile successful!",
+          data: updateUserData,
+        });
       });
-      res
-        .status(200)
-        .send({ message: "Update profile successful!", data: updateUserData });
     } catch (err) {
-      console.error(err.code, err.message);
-      res.status(401).send({ message: err.message });
+      res.send({
+        message: "Something went wrong",
+        data: {},
+        error: err.message,
+      });
     }
   },
 
@@ -143,7 +224,7 @@ exports.UserController = {
         //port: 587,
         auth: {
           user: process.env.email,
-          pass: process.env.pass,
+          pass: process.env.password,
         },
       });
       const email = req.body.email;
@@ -187,7 +268,7 @@ exports.UserController = {
         //port: 587,
         auth: {
           user: process.env.email,
-          pass: process.env.pass,
+          pass: process.env.password,
         },
       });
       const { uid, email, new_password } = req.body;
@@ -253,19 +334,18 @@ exports.UserController = {
   //   }
   // },
 
-
   sendlink: async (req, res) => {
     try {
       const transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
         //port: 587,
         auth: {
-          user: 'mboacare237@gmail.com',
-          pass: 'aueqezamnwohglkb',
+          user: process.env.email,
+          pass: process.env.password,
         },
       });
 
-      const { email} = req.body;
+      const { email } = req.body;
 
       if (!email) {
         res.status(401).send({ message: "Email is Required!" });
@@ -274,7 +354,7 @@ exports.UserController = {
       //notification to verify account
       const link = await admin.auth().generateEmailVerificationLink(email);
       const mailOptions = {
-        from: 'mboacare237@gmail.com',
+        from: process.env.email,
         to: email,
         subject: "Email Verification",
         html: `

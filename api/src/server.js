@@ -12,8 +12,8 @@ app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
-const PORT = process.env.PORT || 8080;
-//const PORT = 3000;
+//const PORT = process.env.PORT || 3000;
+const PORT = 3004;
 
 app.get("/", (req, res) => {
   res.send("Welcome to mboacare");
@@ -28,5 +28,4 @@ app.use("/notification", notificationRoutes);
 app.listen(PORT, () => {
   console.log(`Server is running on PORT ${PORT}.`);
 });
-
-//exports.api = functions.https.onRequest(app);
+exports.api = functions.https.onRequest(app);
