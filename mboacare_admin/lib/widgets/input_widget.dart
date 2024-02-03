@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../themes/app_colors.dart';
@@ -11,11 +9,15 @@ Widget inputWidget({
   required double borderRadius,
   required int maxLines,
   dynamic validator,
+  dynamic Function(String)? onChange,
 }) {
   return SizedBox(
     //height: 45,
-    child: TextFormField(
-      validator: validator,
+    child: TextField(
+     
+      
+      onChanged: onChange,
+     
       maxLines: maxLines,
       controller: controller,
       cursorColor: AppColors.primaryColor,
