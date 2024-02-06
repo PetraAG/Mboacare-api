@@ -266,16 +266,6 @@ class _BlogPageState extends State<BlogPage> {
                             errorWidget: (context, url, error) =>
                                 Icon(Icons.error),
                           ),
-
-                          //Image(image: CachedNetworkImageProvider(blog.blogImage.toString())),
-                          // Image(
-                          //   image:
-                          //       NetworkImage(blog.blogImage.toString()),
-                          //   width: 100.0,
-                          //   height: 200.0,
-                          //   fit: BoxFit.fill,
-                          // ),
-
                           title: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,

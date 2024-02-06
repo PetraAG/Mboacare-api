@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:mboacare_admin/pages/dashboard/dashboard.dart';
+import 'package:mboacare_admin/pages/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-
 
 class DatabaseProvider extends ChangeNotifier {
   Future<SharedPreferences> _pref = SharedPreferences.getInstance();
-
 
   String _name = '';
   String _phone = '';
   String _userEmail = '';
   String _uid = '';
-
 
   String get name => _name;
   String get phone => _phone;
@@ -101,6 +100,7 @@ class DatabaseProvider extends ChangeNotifier {
       return '';
     }
   }
+
   void logout(BuildContext context) async {
     final value = await _pref;
     value.clear();
