@@ -35,6 +35,8 @@ class Apis {
       "$baseUrl/notification/delete-notification/title";
   static const String deleteNotification =
       "$baseUrl/notification/delete-notification/title";
+       static const String addNotification =
+      "$baseUrl/notification/add-notification";
 
   // --------------------------Hospital endpoints--------------------------
   static const String allHospitals = '$baseUrl/hospital/all-hospital';
