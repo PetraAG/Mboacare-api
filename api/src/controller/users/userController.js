@@ -19,8 +19,8 @@ exports.UserController = {
         host: "smtp.gmail.com",
         //port: 587,
         auth: {
-          user: process.env.email,
-          pass: process.env.password,
+          user: process.env.EMAIL,
+          pass: process.env.PASS,
         },
       });
 
@@ -45,7 +45,7 @@ exports.UserController = {
       //notification to verify account
       const link = await admin.auth().generateEmailVerificationLink(email);
       const mailOptions = {
-        from: process.env.email,
+        from: process.env.EMAIL,
         to: email,
         subject: "Email Verification",
         html: `
@@ -223,8 +223,8 @@ exports.UserController = {
         host: "smtp.gmail.com",
         //port: 587,
         auth: {
-          user: process.env.email,
-          pass: process.env.password,
+          user: process.env.EMAIL,
+          pass: process.env.PASS,
         },
       });
       const email = req.body.email;
@@ -234,7 +234,7 @@ exports.UserController = {
       // Send the password reset link to the user
 
       const mailOptions = {
-        from: process.env.email,
+        from: process.env.EMAIL,
         to: email,
         subject: "Password Reset Notification",
         html: `
@@ -267,8 +267,8 @@ exports.UserController = {
         host: "smtp.gmail.com",
         //port: 587,
         auth: {
-          user: process.env.email,
-          pass: process.env.password,
+          user: process.env.EMAIL,
+          pass: process.env.PASS,
         },
       });
       const { uid, email, new_password } = req.body;
@@ -292,7 +292,7 @@ exports.UserController = {
       // Send the password reset link to the user
 
       const mailOptions = {
-        from: process.env.email,
+        from: process.env.EMAIL,
         to: email,
         subject: "Password Update Notification",
         html: `
@@ -340,8 +340,8 @@ exports.UserController = {
         host: "smtp.gmail.com",
         //port: 587,
         auth: {
-          user: process.env.email,
-          pass: process.env.password,
+          user: process.env.EMAIL,
+          pass: process.env.PASS,
         },
       });
 
@@ -354,7 +354,7 @@ exports.UserController = {
       //notification to verify account
       const link = await admin.auth().generateEmailVerificationLink(email);
       const mailOptions = {
-        from: process.env.email,
+        from: process.env.EMAIL,
         to: email,
         subject: "Email Verification",
         html: `

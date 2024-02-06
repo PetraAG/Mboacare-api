@@ -24,8 +24,8 @@ exports.blogController = {
         host: "smtp.gmail.com",
         //port: 587,
         auth: {
-          user: process.env.email,
-          pass: process.env.password,
+          user: process.env.EMAIL,
+          pass: process.env.PASS,
         },
       });
       form.parse(req, async (err, fields, files) => {
@@ -117,7 +117,7 @@ exports.blogController = {
             });
           });
         const mailOptions = {
-          from: process.env.email,
+          from: process.env.EMAIL,
           to: blogModel.userEmail,
           subject: "Blog Submission Successful",
           html: `
@@ -167,8 +167,8 @@ exports.blogController = {
         host: "smtp.gmail.com",
         //port: 587,
         auth: {
-          user: process.env.email,
-          pass: process.env.password,
+          user: process.env.EMAIL,
+          pass: process.env.PASS,
         },
       });
       form.parse(req, async (err, fields, files) => {
@@ -248,7 +248,7 @@ exports.blogController = {
             });
           });
         const mailOptions = {
-          from: process.env.email,
+          from: process.env.EMAIL,
           to: blogModel.userEmail,
           subject: "Blog Update Submission Successful",
           html: `
@@ -372,6 +372,33 @@ exports.blogController = {
       res.status(200).send({ data: response });
     } catch (error) {
       res.status(401).send({ message: error.message });
+    }
+  },
+
+  blogs: async (req, res) => {
+    try {
+      const queryRef = await admin.firestore().collection("blogs");
+
+      const results = await queryRef.get();
+
+      response = results.docs.map((doc) => doc.data());
+      res.status(200).send({ data: response });
+    } catch (error) {
+      res.status(401).send({ message: error.message });
+    }
+  },
+
+  approve_blog: async (req, res) => {
+    try {
+      const { id, status } = req.body;
+
+      const blog = await db.collection("blogs").doc(id).update({
+        isApprove: status,
+        id: id,
+      });
+      res.status(200).send({ data: blog, message: "Blog Approved!!" });
+    } catch (error) {
+      res.send(error.message);
     }
   },
 };
