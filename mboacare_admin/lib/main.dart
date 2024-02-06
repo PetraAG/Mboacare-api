@@ -6,6 +6,7 @@ import 'package:mboacare_admin/provider/auth_provider/login_provider.dart';
 import 'package:mboacare_admin/provider/blog_provider/approveblog_provider.dart';
 import 'package:mboacare_admin/provider/database/databaseProvider.dart';
 import 'package:mboacare_admin/provider/hospital_provider/approvehospital_provider.dart';
+import 'package:mboacare_admin/provider/notification/addnotification_provider.dart';
 
 import 'package:provider/provider.dart';
 
@@ -23,8 +24,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => LoginProvider()),
         ChangeNotifierProvider(create: (_) => DatabaseProvider()),
         ChangeNotifierProvider(create: (_) => ApproveBlogProvider()),
-ChangeNotifierProvider(create: (_) => ApproveHospitalProvider()),
-        
+        ChangeNotifierProvider(create: (_) => ApproveHospitalProvider()),
+         ChangeNotifierProvider(create: (_) => AddNotificationProvider()),
       ],
       child: GetMaterialApp(
         initialRoute: '/',
