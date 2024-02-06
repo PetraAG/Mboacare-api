@@ -20,8 +20,8 @@ exports.hospitalController = {
         host: "smtp.gmail.com",
         //port: 587,
         auth: {
-          user: process.env.email,
-          pass: process.env.password,
+          user: process.env.EMAIL,
+          pass: process.env.PASS,
         },
       });
 
@@ -118,7 +118,7 @@ exports.hospitalController = {
             });
           });
         const mailOptions = {
-          from: process.env.email,
+          from: process.env.EMAIL,
           to: hospitalModel.userEmail,
           subject: "Hospital Details Submission Successful",
           html: `
@@ -179,20 +179,23 @@ exports.hospitalController = {
     } catch (error) {
       res.status(401).send({ message: error.message });
     }
-    // try {
-    //   const hospitalData = db.collection("hospitals");
-    //   const response = await hospitalData.get();
+  },
 
-    //   let responseData = [];
-    //   response.forEach((doc) => {
-    //     responseData.push(doc.data());
-    //   });
-    //   res.send({
-    //     data: responseData,
-    //   });
-    // } catch (error) {
-    //   res.send(error);
-    // }
+  hospitals: async (req, res) => {
+    try {
+      const hospitalData = db.collection("hospitals");
+      const response = await hospitalData.get();
+
+      let responseData = [];
+      response.forEach((doc) => {
+        responseData.push(doc.data());
+      });
+      res.send({
+        data: responseData,
+      });
+    } catch (error) {
+      res.send(error);
+    }
   },
 
   singleHospital: async (req, res) => {
@@ -212,8 +215,8 @@ exports.hospitalController = {
         host: "smtp.gmail.com",
         //port: 587,
         auth: {
-          user: process.env.email,
-          pass: process.env.password,
+          user: process.env.EMAIL,
+          pass: process.env.PASS,
         },
       });
 
@@ -309,7 +312,7 @@ exports.hospitalController = {
             });
           });
         const mailOptions = {
-          from: process.env.email,
+          from: process.env.EMAIL,
           to: hospitalModel.userEmail,
           subject: "Hospital Details updated Successful!",
           html: `
@@ -342,12 +345,13 @@ exports.hospitalController = {
 
   approve_hospital: async (req, res) => {
     try {
-      const website = req.body.website;
-      const status = req.body.status;
-      const hospital = await db.collection("hospitals").doc(website).update({
+      const { id, status } = req.body;
+
+      const hospital = await db.collection("hospitals").doc(id).update({
         isApprove: status,
+        id: id,
       });
-      res.send({ data: hospital, message: "Hospital Approved!!" });
+      res.status(200).send({ data: hospital, message: "Hospital Approved!!" });
     } catch (error) {
       res.send(error.message);
     }
