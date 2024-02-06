@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mboacare_admin/pages/dashboard/dashboard.dart';
+import 'package:mboacare_admin/pages/login.dart';
 import 'package:mboacare_admin/provider/database/databaseProvider.dart';
 import 'package:mboacare_admin/services/apis.dart';
 import 'package:mboacare_admin/ustils/assets_string.dart';
@@ -189,15 +190,14 @@ class LoginProvider extends ChangeNotifier {
 
   void signOut({required BuildContext context}) async {
     _isLoading = true;
-    snackMessage(message: "Logout Successful!", context: context);
     notifyListeners();
-    PageNavigator(ctx: context).nextPage(page: const Dashboard());
 
     try {
-      // await auth.signOut();
-      // await googleSignIn.signOut();
-      DatabaseProvider().logout(context);
       _isLoading = false;
+      snackMessage(message: "Logout Successful!", context: context);
+      DatabaseProvider().logout(context);
+      PageNavigator(ctx: context).nextPageOnly(page: const Login());
+
       notifyListeners();
     } catch (error) {
       // Handle signout errors
