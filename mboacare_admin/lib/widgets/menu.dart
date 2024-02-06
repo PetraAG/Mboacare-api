@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,7 +8,10 @@ import 'package:mboacare_admin/pages/dashboard/dashboard.dart';
 import 'package:mboacare_admin/pages/dashboard/hospital.dart';
 import 'package:mboacare_admin/pages/dashboard/notification.dart';
 import 'package:mboacare_admin/pages/dashboard/user.dart';
+import 'package:mboacare_admin/provider/auth_provider/login_provider.dart';
+import 'package:mboacare_admin/provider/database/databaseProvider.dart';
 import 'package:mboacare_admin/themes/app_colors.dart';
+import 'package:provider/provider.dart';
 
 import '../model/menu_model.dart';
 import '../ustils/assets_string.dart';
@@ -29,7 +33,6 @@ class _MenuState extends State<Menu> {
     MenuModel(widget: ImageAssets.blog, title: "Blog"),
     MenuModel(widget: ImageAssets.notification, title: "Notification"),
     MenuModel(widget: ImageAssets.profile, title: "Users"),
-    MenuModel(widget: ImageAssets.logout, title: "Logout"),
   ];
 
   int selected = 0;
@@ -129,6 +132,46 @@ class _MenuState extends State<Menu> {
                   ),
                 ),
               ),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.08),
+            Consumer<LoginProvider>(builder: (context, auth, child) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (auth.reqMessage != '') {
+                  auth.clear();
+                }
+              });
+              return auth.isLoading
+                  ? Center(
+                      child: SpinKitThreeBounce(
+                        color: AppColors.whiteColor,
+                      ),
+                    )
+                  : GestureDetector(
+                      onTap: () {
+                        auth.signOut(context: context);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Container(
+                          padding: const EdgeInsets.all(10.0),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20.0),
+                              color: AppColors.whiteColor),
+                          child: Row(
+                            children: [
+                              SvgPicture.asset(
+                                ImageAssets.logout,
+                                color: AppColors.primaryColor,
+                              ),
+                              Text(
+                                'Logout',
+                                style: TextStyle(color: AppColors.primaryColor),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+            }),
           ],
         )),
       ),
