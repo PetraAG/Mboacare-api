@@ -333,6 +333,7 @@ exports.blogController = {
       // Build the query using multiple where conditions
       query.where("blogTitle", "==", query1);
       query.where("blogAuthor", "==", query1);
+      query.where("isApprove", "==", true);
       // Add more where conditions for additional fields
 
       const snapshot = await query.get();
