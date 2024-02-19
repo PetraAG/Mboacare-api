@@ -10,6 +10,6 @@ router.put("/update-profile", UserController.update_profile);
 router.put("/change-password", UserController.change_password);
 router.post("/reset-password", UserController.reset_password);
 router.post("/send-link", UserController.sendlink);
-
+router.post("/user", UserController.getUser);
 
 module.exports = router;

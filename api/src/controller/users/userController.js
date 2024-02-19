@@ -385,4 +385,29 @@ exports.UserController = {
       res.status(401).send({ status: err.code, message: err.message });
     }
   },
+
+  getUser: async (req, res) => {
+    try {
+      const { email } = req.body;
+
+      const userRecord = await admin.auth().getUserByEmail(email);
+
+      if (!email == userRecord.email) {
+        res.status(401).send({ message: "Invalid User" });
+        return;
+      }
+      if (userRecord.emailVerified == false) {
+        res.status(401).send({ message: "Email is not verified!" });
+        return;
+      }
+      if (!email) {
+        res.status(401).send({ message: "Email is Required!" });
+        return;
+      }
+      res.status(200).send( userRecord );
+    } catch (err) {
+      console.error(err.code, err.message);
+      res.status(500).send({ message: "Error retrieving user data" });
+    }
+  },
 };

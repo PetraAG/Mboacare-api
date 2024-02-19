@@ -406,13 +406,14 @@ exports.hospitalController = {
     //   res.status(401).send({ message: error.message });
     // }
     try {
-      const query = req.query.q;
+      const { query, isApprove } = req.query.q;
 
       // Create a Firestore query
       const queryRef = await admin
         .firestore()
         .collection("hospitals")
-        .where("name", "==", query);
+        .where("isApprove", "==", true, "name", "==", query);
+
       // Get the search results
       const results = await queryRef.get();
       const response = results.docs.map((doc) => doc.data());
