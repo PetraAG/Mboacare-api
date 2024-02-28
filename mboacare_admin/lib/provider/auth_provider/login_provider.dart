@@ -97,6 +97,11 @@ class LoginProvider extends ChangeNotifier {
               message: "Email is not verified! Check email to verify Account!",
               context: context);
           notifyListeners();
+        } else if (res['data']['email'] != "mboacare237@gmail.com") {
+          _isLoading = false;
+          snackErrorMessage(
+              message: "For Admin Access only!", context: context);
+          notifyListeners();
         } else {
           _isLoading = false;
           // notifyListeners();
